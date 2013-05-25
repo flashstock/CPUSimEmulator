@@ -21,7 +21,7 @@ Command List
 Command - target operand operand
 
 
-END - no paremeters 	   - Ends program <br>
+END - no paremeters		   - Ends program <br>
 ADD - 3 registers 		   - Addition <br>
 SUB - 3 registers 		   - Subtraction <br>
 MUL - 3 registers 		   - Multiplication <br>
