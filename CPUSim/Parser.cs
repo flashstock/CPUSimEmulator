@@ -9,59 +9,81 @@ namespace CPUSim
     class Parser
     {
         List<string> program = new List<string>();
-        
+        List<string> parsedprogram = new List<string>();
+        Dictionary<string, int> labels = new Dictionary<string, int>();
 
         public void SetProgram(List<string> program)
         {
             this.program = program;
         }
 
-        private string CleanLine(string line)
+        private string ParseLine(string line)
         {
-            //line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+            if (line.StartsWith("#"))
+                return "";
             int index = line.IndexOf("#");
-            line.Replace(@"\t", "");
+           
             if (index >= 0)
             {
                 line = line.Substring(0, index);
-                
-                return System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+                line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+                if (line == "")
+                    return "";
+                else
+                {
+                    parsedprogram.Add(line);
+                    return line;
+                }
             }
             else
-                return System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
-        }
-
-        private void CleanSourceFile()
-        {
-            foreach (string line in program)
             {
-
-                string temp = line;
-                //line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
-                int index = line.IndexOf("#");
-                if (index >= 0)
-                {
-                    temp = line.Substring(0, index);
-                    program[program.IndexOf(line)] = System.Text.RegularExpressions.Regex.Replace(temp, @"\s+", " ").Trim();
-                }
+                line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+                if (line == "")
+                    return "";
                 else
-                    program[program.IndexOf(line)] = System.Text.RegularExpressions.Regex.Replace(temp, @"\s+", " ").Trim();
+                {
+                    parsedprogram.Add(line);
+                    return line;
+                }
             }
         }
 
-        private void ParseLabels()
+        private void ParseLabel(string line, int i)
         {
-
+            if (line.StartsWith("@"))
+            {
+                int index = line.IndexOf("@");
+                if (index >= 0)
+                {
+                    labels.Add(line.Substring(0, line.IndexOf(":")), i != 0 ? i - 1 : i); 
+                }
+                //labels.Add(line.Substring(1, line.IndexOf(":") - 1), i);
+            }
         }
 
         public List<string> GetParsedProgram()
         {
-            ParseLabels();
+            int i = 0;
             foreach (string line in program)
-                CleanLine(line);
-            //CleanSourceFile();
-            return program;
+            {
+                string parsedline = ParseLine(line);
+                if (parsedline != "")
+                {
+                    ParseLabel(parsedline, i);
+                    i++;
+                }
+                else
+                    continue;
+             
+            }
             
+            return parsedprogram;
+            
+        }
+
+        public Dictionary<string, int> GetParsedLabels()
+        {
+            return labels;
         }
 
     }

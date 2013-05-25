@@ -13,7 +13,9 @@ namespace CPUSim
         private Memory memory;
         private Parser parser;
         List<string> program = new List<string>();
+        List<string> parsedprogram = new List<string>();
         private CPU cpu;
+        Dictionary<string, int> labels;
         
         public Main(string filename)
         {
@@ -30,10 +32,13 @@ namespace CPUSim
 
             Console.WriteLine("Parsing program");
             parser.SetProgram(program);
-            parser.GetParsedProgram();
+            parsedprogram = parser.GetParsedProgram();
+            labels = parser.GetParsedLabels();
+            foreach (string line in parsedprogram)
+                Console.WriteLine(line);
             Console.WriteLine("Program parsed");
 
-            cpu = new CPU(program, memory, input);
+            cpu = new CPU(parsedprogram, memory, input, labels);
             Console.WriteLine("Executing program");
             cpu.ExecuteLoadedProgram();
             Console.WriteLine("Program executed!");

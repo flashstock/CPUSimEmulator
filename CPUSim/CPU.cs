@@ -10,47 +10,60 @@ namespace CPUSim
     {
         private Memory memory;
         //private List<string> program;
-        private string[] program;
+        private List<string> program;
         private Input input;
-
-        public CPU(List<string> program, Memory memory, Input input)
+        private Dictionary<string, int> labels;
+        private int index;
+        public CPU(List<string> program, Memory memory, Input input, Dictionary<string, int> labels)
         {
-            this.program = program.ToArray();
+            this.program = program;
             this.memory = memory;
             this.input = input;
+            this.labels = labels;
+
+        }
+
+        private void RemoveLabels()
+        {
+            //remove labels so that they don't get interpreted as commands
+            for (int i = program.Count - 1; i >= 0; i--)
+            {
+                if (program[i].StartsWith("@"))
+                    program.RemoveAt(i);
+            }
+
         }
         public void ExecuteLoadedProgram()
         {
+            RemoveLabels();
             while (true)//foreach (string instruction in instructions)
             {
-                memory.SetValue("PC", memory.GetValue("PC") + 1);
+                //memory.SetValue("PC", memory.GetValue("PC") + 1);
                 //string cleanedString = System.Text.RegularExpressions.Regex.Replace(instructions[memory.GetValue("PC")], @"\s+", " ").Trim();
                 //string[] instructionAndArgument = cleanedString.Split(' ');
-                string[] instructionAndArgument;
+                string[] instrandops;
+
+                /*try
+                {
+                    
+                }*/
+
+                instrandops = program[memory.GetValue("PC")].Split(' ');
 
                 try
                 {
-                    instructionAndArgument = program[memory.GetValue("PC") - 1].Split(' ');
-                }
-
-                catch (Exception e)
-                {
-                    return;
-                }
-
-                try
-                {
-                    if (instructionAndArgument[2] == "IO" || instructionAndArgument[3] == "IO")
-                    {
-                        memory.SetValue(instructionAndArgument[1], input.GetInputToIO());
-                        continue;
-                    }
+                        if (instrandops[2] == "IO" || instrandops[3] == "IO")
+                        {
+                            memory.SetValue(instrandops[1], input.GetInputToIO());
+                            continue;
+                        }
                 }
                 catch (Exception e) {}
 
-                int numberOfArguments = instructionAndArgument.Length - 1;
-                if (!instructionAndArgument[0].StartsWith("@"))
-                    switch (instructionAndArgument[0])
+                int numberOfArguments = instrandops.Length - 1;
+                if (!instrandops[0].StartsWith("@"))
+                {
+                    switch (instrandops[0])
                     {
                         case "END":
                             if (numberOfArguments > 0)
@@ -58,62 +71,67 @@ namespace CPUSim
                             else
                                 return;
                         case "ADD":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) + memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) + memory.GetValue(instrandops[3]));
                             break;
                         case "SUB":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) - memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) - memory.GetValue(instrandops[3]));
                             break;
                         case "MUL":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) * memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) * memory.GetValue(instrandops[3]));
                             break;
                         case "DIV":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) / memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) / memory.GetValue(instrandops[3]));
                             break;
                         case "MOD":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) % memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) % memory.GetValue(instrandops[3]));
                             break;
                         case "AND":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) & memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) & memory.GetValue(instrandops[3]));
                             break;
                         case "ORO":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]) | memory.GetValue(instructionAndArgument[3]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) | memory.GetValue(instrandops[3]));
                             break;
                         case "NOT":
-                            memory.SetValue(instructionAndArgument[1], int.MaxValue - memory.GetValue(instructionAndArgument[2]));
+                            memory.SetValue(instrandops[1], int.MaxValue - memory.GetValue(instrandops[2]));
                             break;
                         case "SLT":
-                            if (memory.GetValue(instructionAndArgument[2]) < memory.GetValue(instructionAndArgument[3]))
-                                memory.SetValue(instructionAndArgument[1], 1);
+                            if (memory.GetValue(instrandops[2]) < memory.GetValue(instrandops[3]))
+                                memory.SetValue(instrandops[1], 1);
                             else
-                                memory.SetValue(instructionAndArgument[1], 0);
+                                memory.SetValue(instrandops[1], 0);
                             break;
                         case "SGT":
-                            if (memory.GetValue(instructionAndArgument[2]) > memory.GetValue(instructionAndArgument[3]))
-                                memory.SetValue(instructionAndArgument[1], 1);
+                            if (memory.GetValue(instrandops[2]) > memory.GetValue(instrandops[3]))
+                                memory.SetValue(instrandops[1], 1);
                             else
-                                memory.SetValue(instructionAndArgument[1], 0);
+                                memory.SetValue(instrandops[1], 0);
                             break;
                         case "SEQ":
-                            if (memory.GetValue(instructionAndArgument[2]) == memory.GetValue(instructionAndArgument[3]))
-                                memory.SetValue(instructionAndArgument[1], 1);
+                            if (memory.GetValue(instrandops[2]) == memory.GetValue(instrandops[3]))
+                                memory.SetValue(instrandops[1], 1);
                             else
-                                memory.SetValue(instructionAndArgument[1], 0);
+                                memory.SetValue(instrandops[1], 0);
                             break;
                         case "CPY":
-                            memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[2]));
+                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]));
                             break;
-                        case "JMP": //Not implemented
+                        case "JMP":
+                            memory.SetValue("PC", labels[instrandops[1]]);
                             break;
                         case "JPZ": //Not implemented
+                            if (memory.GetValue(instrandops[1]) == 0)
+                                memory.SetValue("PC", labels[instrandops[2]]);
                             break;
                         case "JNZ": //Not implemented
+                            if (memory.GetValue(instrandops[1]) != 0)
+                                memory.SetValue("PC", labels[instrandops[2]]);
                             break;
                         case "LOD": //Not implemented
                             break;
                         case "STO": //Not implemented
                             break;
                         case "IMM":
-                            memory.SetValue(instructionAndArgument[1], Convert.ToInt32(instructionAndArgument[2]));
+                            memory.SetValue(instrandops[1], Convert.ToInt32(instrandops[2]));
                             break;
                         case "CAL": //Not implemented
                             break;
@@ -127,17 +145,21 @@ namespace CPUSim
                             if (numberOfArguments > 1)
                                 throw new ArgumentException();
                             else
-                                memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[1]) + 1);
+                                memory.SetValue(instrandops[1], memory.GetValue(instrandops[1]) + 1);
                             break;
                         case "DEC":
                             if (numberOfArguments > 1)
                                 throw new ArgumentException();
                             else
-                                memory.SetValue(instructionAndArgument[1], memory.GetValue(instructionAndArgument[1]) - 1);
+                                memory.SetValue(instrandops[1], memory.GetValue(instrandops[1]) - 1);
                             break;
                         case "NOP":
                             break;
                     }
+                    memory.SetValue("PC", memory.GetValue("PC") + 1);
+                }
+                else
+                    continue;
 
             }
         }
