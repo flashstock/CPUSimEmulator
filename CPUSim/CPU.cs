@@ -48,13 +48,20 @@ namespace CPUSim
                     
                 }*/
 
-                instrandops = program[memory.GetValue("PC")].Split(' ');
-
+                try
+                {
+                    instrandops = program[memory.GetValue("PC")].Split(' ');
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    return;
+                }
                 try
                 {
                         if (instrandops[2] == "IO" || instrandops[3] == "IO")
                         {
                             memory.SetValue(instrandops[1], input.GetInputToIO());
+                            memory.SetValue("PC", memory.GetValue("PC") + 1);
                             continue;
                         }
                 }
