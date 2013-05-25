@@ -21,39 +21,39 @@ Command List
 Command - target operand operand
 
 
-END - no paremeters 	   - ends program
-ADD - 3 registers 		   - Addition
-SUB - 3 registers 		   - Subtraction
-MUL - 3 registers 		   - Multiplication
-DIV - 3 registers 		   - Division
-MOD - 3 registers 		   - Modulus
-AND - 3 registers 		   - Binary AND
-ORO - 3 registers 		   - Binary OR
-NOT - 3 registers 		   - Binary NOT
-SLT - 3 registers 		   - If less than
-SGT - 3 registers 		   - If bigger than
-SEQ - 3 registers 		   - If equal
-CPY - 2 registers 		   - Copy
-JMP - 1 label     		   - Jump
-JPZ - 1 register + 1 label - Jump if zero
-JNZ - 1 register + 1 label - Jump if not zero
-LOD - 2 registers 		   - Read from RAM
-STO - 2 registers 		   - Write to RAM
-IMM - 1 register + 1 value - Load value
-CAL - 1 label 			   - Call subroutine
-RET - no parameters		   - Return from subroutine
-PSH - 1 register 		   - Push stack
-POP - 1 register 		   - Pop stack
-INC - 1 register 		   - Increase by one
-DEC - 1 register 		   - Decrease by one
-NOP - no registers 		   - No operation
+END - no paremeters 	   - Ends program <br>
+ADD - 3 registers 		   - Addition <br>
+SUB - 3 registers 		   - Subtraction <br>
+MUL - 3 registers 		   - Multiplication <br>
+DIV - 3 registers 		   - Division <br>
+MOD - 3 registers 		   - Modulus <br>
+AND - 3 registers 		   - Binary AND <br>
+ORO - 3 registers 		   - Binary OR <br>
+NOT - 3 registers 		   - Binary NOT <br>
+SLT - 3 registers 		   - If less than <br>
+SGT - 3 registers 		   - If bigger than <br>
+SEQ - 3 registers 		   - If equal <br>
+CPY - 2 registers 		   - Copy <br>
+JMP - 1 label     		   - Jump <br>
+JPZ - 1 register + 1 label - Jump if zero <br>
+JNZ - 1 register + 1 label - Jump if not zero <br>
+LOD - 2 registers 		   - Read from RAM <br>
+STO - 2 registers 		   - Write to RAM <br>
+IMM - 1 register + 1 value - Load value <br>
+CAL - 1 label 			   - Call subroutine <br>
+RET - no parameters		   - Return from subroutine <br>
+PSH - 1 register 		   - Push stack <br>
+POP - 1 register 		   - Pop stack <br>
+INC - 1 register 		   - Increase by one <br>
+DEC - 1 register 		   - Decrease by one <br>
+NOP - no registers 		   - No operation <br>
 
 Registers
 =============
-R0 - R7
-SP - Stack top address
-PC - Address to next instruction in program
-IR - Contains the previously run command
-IO - Will outpout to console window if it is a target, if IO is an operand, user will be asked to input a number
-RL - Unknown
-TP - Unknown
+R0 - R7 <br>
+SP - Stack top address <br>
+PC - Address to next instruction in program <br>
+IR - Contains the previously run command <br>
+IO - Will outpout to console window if it is a target, if IO is an operand, user will be asked to input a number <br>
+RL - Unknown <br>
+TP - Unknown <br>
