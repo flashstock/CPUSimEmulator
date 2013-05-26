@@ -26,9 +26,10 @@ namespace CPUSim
             registers.Add("SP", 0);
             registers.Add("PC", 0);
             registers.Add("IR", 0);
-            registers.Add("IO", 0);
+            //registers.Add("IO", 0);
             registers.Add("RL", 0);
             registers.Add("TP", 0);
+            
            
         }
 
@@ -55,6 +56,8 @@ namespace CPUSim
         {
             foreach (var register in registers)
             {
+                if (register.Key == "IO1" || register.Key == "IO2")
+                    continue;
                 Console.WriteLine("[{0}], [DEC:{1} HEX:{2} BIN:{3}]", register.Key, register.Value, register.Value.ToString("X"),
                     Convert.ToString(register.Value, 2));
             }

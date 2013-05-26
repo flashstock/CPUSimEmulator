@@ -11,6 +11,7 @@ namespace CPUSim
         List<string> program = new List<string>();
         List<string> parsedprogram = new List<string>();
         Dictionary<string, int> labels = new Dictionary<string, int>();
+        Dictionary<string, string> aliases = new Dictionary<string, string>();
 
         public void SetProgram(List<string> program)
         {
@@ -19,32 +20,24 @@ namespace CPUSim
 
         private string ParseLine(string line)
         {
-            if (line.StartsWith("#"))
-                return "";
             int index = line.IndexOf("#");
-           
+
             if (index >= 0)
-            {
                 line = line.Substring(0, index);
-                line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
-                if (line == "")
-                    return "";
-                else
-                {
-                    parsedprogram.Add(line);
-                    return line;
-                }
+            line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+
+            
+            if (line == "" || line.StartsWith("#"))
+                return "";
+            if (line.StartsWith("$"))
+            {
+                ParseAlias(line);
+                return "";
             }
             else
             {
-                line = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
-                if (line == "")
-                    return "";
-                else
-                {
-                    parsedprogram.Add(line);
-                    return line;
-                }
+                parsedprogram.Add(line);
+                return line;
             }
         }
 
@@ -55,27 +48,49 @@ namespace CPUSim
                 int index = line.IndexOf("@");
                 if (index >= 0)
                 {
-                    labels.Add(line.Substring(0, line.IndexOf(":")), i != 0 ? i - 1 : i); 
+                    labels.Add(line.Substring(0, line.IndexOf(":")), i != 0 ? i - 1 : i); //magic snort snort
                 }
-                //labels.Add(line.Substring(1, line.IndexOf(":") - 1), i);
+            }
+        }
+        
+        private void ParseAlias(string line)
+        {
+            if (line.StartsWith("$"))
+            {
+                string[] alias = line.Split(' ');
+                aliases.Add(alias[0].Substring(0, alias[0].IndexOf(":")), alias[1]);
+            }
+        }
+
+        private void ReplaceAliasWithValue()
+        {
+            for (int i = parsedprogram.Count - 1; i >= 0; i--)
+            {
+                if (parsedprogram[i].StartsWith("@"))
+                    parsedprogram.RemoveAt(i);
             }
         }
 
         public List<string> GetParsedProgram()
         {
-            int i = 0;
+
             foreach (string line in program)
+                ParseLine(line);
+            //foreach (string line in parsedprogram)
+            //    ParseAlias(line);
+            
+            int i = 0;
+            foreach (string line in parsedprogram)
             {
-                string parsedline = ParseLine(line);
-                if (parsedline != "")
+                if (line != "")
                 {
-                    ParseLabel(parsedline, i);
+                    ParseLabel(line, i);
                     i++;
                 }
                 else
                     continue;
-             
             }
+            RemoveLabels();
             
             return parsedprogram;
             
@@ -84,6 +99,22 @@ namespace CPUSim
         public Dictionary<string, int> GetParsedLabels()
         {
             return labels;
+        }
+
+        private void RemoveLabels() 
+        {
+            //remove labels so that they don't get interpreted as commands
+            //to iterate and remove items from a list in one loop iterate backwards
+            for (int i = parsedprogram.Count - 1; i >= 0; i--)
+            {
+                if (parsedprogram[i].StartsWith("@"))
+                    parsedprogram.RemoveAt(i);
+            }
+        }
+
+        public Dictionary<string, string> GetParsedAliases()
+        {
+            return aliases;
         }
 
     }

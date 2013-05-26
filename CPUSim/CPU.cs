@@ -9,68 +9,74 @@ namespace CPUSim
     class CPU
     {
         private Memory memory;
-        //private List<string> program;
         private List<string> program;
         private Input input;
         private Dictionary<string, int> labels;
-        private int index;
-        public CPU(List<string> program, Memory memory, Input input, Dictionary<string, int> labels)
+        private Dictionary<string, string> aliases;
+        private int clockcount;
+
+        public CPU(List<string> program, Memory memory, Input input, Dictionary<string, int> labels, Dictionary<string, string> aliases)
         {
             this.program = program;
             this.memory = memory;
             this.input = input;
             this.labels = labels;
-
+            this.aliases = aliases;
         }
 
-        private void RemoveLabels()
+        private string ReplaceAliasWithValue(string alias) //dirty fix, should be in parser but I can't figure out how to implement
         {
-            //remove labels so that they don't get interpreted as commands
-            for (int i = program.Count - 1; i >= 0; i--)
+            return aliases[alias];
+        }
+
+        private string Fetch()
+        {
+            clockcount++;
+            if (memory.GetValue("PC") == program.Count)
             {
-                if (program[i].StartsWith("@"))
-                    program.RemoveAt(i);
+                Execute(new string[] {"END"});
+                return null; //If end doesn't exist, make it exist
+            }
+            return program[memory.GetValue("PC")];
+        }
+        private void AddressOut()
+        {
+            
+        }
+        public void ExecuteLoadedProgramExperimental()
+        {
+            while (true)
+            {
+                AddressOut(); //increments clockcount, does nothing
+                string operation = Fetch();
+                if (operation != null)
+                    Execute(Interpret(operation));
+                else
+                    return; //END
+
+            }
+        }
+        private string[] Interpret(string operation) //purely for compatibility
+        {
+            string[] splitoperation = operation.Split(' ');
+            return splitoperation;
+        }
+
+        private void Execute(string[] operation)
+        {
+            memory.SetValue("PC", memory.GetValue("PC") + 1);
+            clockcount++;
+            int numberOfArguments = operation.Length - 1;
+
+            for (int i = 0; i < operation.Length; i++)
+            {
+                if (operation[i].StartsWith("$"))
+                {
+                    operation[i] = ReplaceAliasWithValue(operation[i]);
+                }
             }
 
-        }
-        public void ExecuteLoadedProgram()
-        {
-            RemoveLabels();
-            while (true)//foreach (string instruction in instructions)
-            {
-                //memory.SetValue("PC", memory.GetValue("PC") + 1);
-                //string cleanedString = System.Text.RegularExpressions.Regex.Replace(instructions[memory.GetValue("PC")], @"\s+", " ").Trim();
-                //string[] instructionAndArgument = cleanedString.Split(' ');
-                string[] instrandops;
-
-                /*try
-                {
-                    
-                }*/
-
-                try
-                {
-                    instrandops = program[memory.GetValue("PC")].Split(' ');
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    return;
-                }
-                try
-                {
-                        if (instrandops[2] == "IO" || instrandops[3] == "IO")
-                        {
-                            memory.SetValue(instrandops[1], input.GetInputToIO());
-                            memory.SetValue("PC", memory.GetValue("PC") + 1);
-                            continue;
-                        }
-                }
-                catch (Exception e) {}
-
-                int numberOfArguments = instrandops.Length - 1;
-                if (!instrandops[0].StartsWith("@"))
-                {
-                    switch (instrandops[0])
+            switch (operation[0])
                     {
                         case "END":
                             if (numberOfArguments > 0)
@@ -78,67 +84,201 @@ namespace CPUSim
                             else
                                 return;
                         case "ADD":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) + memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) + memory.GetValue(operation[3]));
                             break;
                         case "SUB":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) - memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) - memory.GetValue(operation[3]));
                             break;
                         case "MUL":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) * memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) * memory.GetValue(operation[3]));
                             break;
                         case "DIV":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) / memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) / memory.GetValue(operation[3]));
                             break;
                         case "MOD":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) % memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) % memory.GetValue(operation[3]));
                             break;
                         case "AND":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) & memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) & memory.GetValue(operation[3]));
                             break;
                         case "ORO":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]) | memory.GetValue(instrandops[3]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) | memory.GetValue(operation[3]));
                             break;
                         case "NOT":
-                            memory.SetValue(instrandops[1], int.MaxValue - memory.GetValue(instrandops[2]));
+                            memory.SetValue(operation[1], int.MaxValue - memory.GetValue(operation[2]));
                             break;
                         case "SLT":
-                            if (memory.GetValue(instrandops[2]) < memory.GetValue(instrandops[3]))
-                                memory.SetValue(instrandops[1], 1);
+                            if (memory.GetValue(operation[2]) < memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
                             else
-                                memory.SetValue(instrandops[1], 0);
+                                memory.SetValue(operation[1], 0);
                             break;
                         case "SGT":
-                            if (memory.GetValue(instrandops[2]) > memory.GetValue(instrandops[3]))
-                                memory.SetValue(instrandops[1], 1);
+                            if (memory.GetValue(operation[2]) > memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
                             else
-                                memory.SetValue(instrandops[1], 0);
+                                memory.SetValue(operation[1], 0);
                             break;
                         case "SEQ":
-                            if (memory.GetValue(instrandops[2]) == memory.GetValue(instrandops[3]))
-                                memory.SetValue(instrandops[1], 1);
+                            if (memory.GetValue(operation[2]) == memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
                             else
-                                memory.SetValue(instrandops[1], 0);
+                                memory.SetValue(operation[1], 0);
                             break;
                         case "CPY":
-                            memory.SetValue(instrandops[1], memory.GetValue(instrandops[2]));
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]));
                             break;
                         case "JMP":
-                            memory.SetValue("PC", labels[instrandops[1]]);
+                            memory.SetValue("PC", labels[operation[1]]);
                             break;
-                        case "JPZ": //Not implemented
-                            if (memory.GetValue(instrandops[1]) == 0)
-                                memory.SetValue("PC", labels[instrandops[2]]);
+                        case "JPZ": 
+                            if (memory.GetValue(operation[1]) == 0)
+                                memory.SetValue("PC", labels[operation[2]]);
                             break;
-                        case "JNZ": //Not implemented
-                            if (memory.GetValue(instrandops[1]) != 0)
-                                memory.SetValue("PC", labels[instrandops[2]]);
+                        case "JNZ": 
+                            if (memory.GetValue(operation[1]) != 0)
+                                memory.SetValue("PC", labels[operation[2]]);
                             break;
                         case "LOD": //Not implemented
                             break;
                         case "STO": //Not implemented
                             break;
                         case "IMM":
-                            memory.SetValue(instrandops[1], Convert.ToInt32(instrandops[2]));
+                            memory.SetValue(operation[1], Convert.ToInt32(operation[2]));
+                            break;
+                        case "CAL": //Not implemented
+                            break;
+                        case "RET": //Not implemented
+                            break;
+                        case "PSH": //Not implemented
+                            break;
+                        case "POP": //Not implemented
+                            break;
+                        case "INC":
+                            memory.SetValue(operation[1], memory.GetValue(operation[1]) + 1);
+                            break;
+                        case "DEC":
+                            memory.SetValue(operation[1], memory.GetValue(operation[1]) - 1);
+                            break;
+                        case "NOP":
+                            break;
+                    }
+        }
+        public void ExecuteLoadedProgram() //Retrieve - Interpret - Writeback
+        {
+        
+            while (true)
+            {
+                
+                string[] operation;
+
+
+                try
+                {
+                    operation = program[memory.GetValue("PC")].Split(' ');
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    return;
+                }
+                try
+                {
+                        if (operation[2] == "IO" || operation[3] == "IO")
+                        {
+                            memory.SetValue(operation[1], input.GetInputToIO());
+                            memory.SetValue("PC", memory.GetValue("PC") + 1);
+                            continue;
+                        }
+                }
+                catch (Exception e) {}
+
+                int numberOfArguments = operation.Length - 1;
+                if (!operation[0].StartsWith("@"))
+                {
+                    bool c = false;
+                    for (int i = 0; i < operation.Length; i++)
+                    {
+                        if (operation[i].StartsWith("$"))
+                        {
+                            operation[i] = ReplaceAliasWithValue(operation[i]);
+                        }
+                    }
+                    switch (operation[0])
+                    {
+                        case "END":
+                            if (numberOfArguments > 0)
+                                throw new ArgumentException();
+                            else
+                                return;
+                        case "ADD":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) + memory.GetValue(operation[3]));
+                            break;
+                        case "SUB":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) - memory.GetValue(operation[3]));
+                            break;
+                        case "MUL":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) * memory.GetValue(operation[3]));
+                            break;
+                        case "DIV":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) / memory.GetValue(operation[3]));
+                            break;
+                        case "MOD":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) % memory.GetValue(operation[3]));
+                            break;
+                        case "AND":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) & memory.GetValue(operation[3]));
+                            break;
+                        case "ORO":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]) | memory.GetValue(operation[3]));
+                            break;
+                        case "NOT":
+                            memory.SetValue(operation[1], int.MaxValue - memory.GetValue(operation[2]));
+                            break;
+                        case "SLT":
+                            if (memory.GetValue(operation[2]) < memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
+                            else
+                                memory.SetValue(operation[1], 0);
+                            break;
+                        case "SGT":
+                            if (memory.GetValue(operation[2]) > memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
+                            else
+                                memory.SetValue(operation[1], 0);
+                            break;
+                        case "SEQ":
+                            if (memory.GetValue(operation[2]) == memory.GetValue(operation[3]))
+                                memory.SetValue(operation[1], 1);
+                            else
+                                memory.SetValue(operation[1], 0);
+                            break;
+                        case "CPY":
+                            memory.SetValue(operation[1], memory.GetValue(operation[2]));
+                            break;
+                        case "JMP":
+                            memory.SetValue("PC", labels[operation[1]]);
+                            c = true;
+                            break;
+                        case "JPZ": //Not implemented
+                            if (memory.GetValue(operation[1]) == 0)
+                            {
+                                c = true;
+                                memory.SetValue("PC", labels[operation[2]]);
+                            }
+                            break;
+                        case "JNZ": //Not implemented
+                            if (memory.GetValue(operation[1]) != 0)
+                            {
+                                c = true;
+                                memory.SetValue("PC", labels[operation[2]]);
+                            }
+                            break;
+                        case "LOD": //Not implemented
+                            break;
+                        case "STO": //Not implemented
+                            break;
+                        case "IMM":
+                            memory.SetValue(operation[1], Convert.ToInt32(operation[2]));
                             break;
                         case "CAL": //Not implemented
                             break;
@@ -152,18 +292,19 @@ namespace CPUSim
                             if (numberOfArguments > 1)
                                 throw new ArgumentException();
                             else
-                                memory.SetValue(instrandops[1], memory.GetValue(instrandops[1]) + 1);
+                                memory.SetValue(operation[1], memory.GetValue(operation[1]) + 1);
                             break;
                         case "DEC":
                             if (numberOfArguments > 1)
                                 throw new ArgumentException();
                             else
-                                memory.SetValue(instrandops[1], memory.GetValue(instrandops[1]) - 1);
+                                memory.SetValue(operation[1], memory.GetValue(operation[1]) - 1);
                             break;
                         case "NOP":
                             break;
                     }
-                    memory.SetValue("PC", memory.GetValue("PC") + 1);
+                    if (!c) 
+                        memory.SetValue("PC", memory.GetValue("PC") + 1);
                 }
                 else
                     continue;

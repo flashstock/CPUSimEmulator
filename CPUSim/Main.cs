@@ -12,10 +12,11 @@ namespace CPUSim
         private Input input;
         private Memory memory;
         private Parser parser;
-        List<string> program = new List<string>();
-        List<string> parsedprogram = new List<string>();
+        private List<string> program = new List<string>();
+        private List<string> parsedprogram = new List<string>();
         private CPU cpu;
-        Dictionary<string, int> labels;
+        private Dictionary<string, int> labels;
+        private Dictionary<string, string> aliases;
         
         public Main(string filename)
         {
@@ -34,18 +35,22 @@ namespace CPUSim
             parser.SetProgram(program);
             parsedprogram = parser.GetParsedProgram();
             labels = parser.GetParsedLabels();
+            aliases = parser.GetParsedAliases();
             foreach (string line in parsedprogram)
                 Console.WriteLine(line);
             Console.WriteLine("Program parsed");
 
-            cpu = new CPU(parsedprogram, memory, input, labels);
+            cpu = new CPU(parsedprogram, memory, input, labels, aliases);
             Console.WriteLine("Executing program");
-            cpu.ExecuteLoadedProgram();
+            cpu.ExecuteLoadedProgramExperimental();
+            //cpu.ExecuteLoadedProgram();
             Console.WriteLine("Program executed!");
 
             Console.WriteLine("\nDumping registers.\n");
             memory.DumpRegisters();
-            
+            memory.DumpRAM();
+
+            Console.WriteLine("Press any key to continue . . .");
             Console.ReadLine();
         }
 
