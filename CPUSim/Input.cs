@@ -13,7 +13,6 @@ namespace CPUSim
             Console.WriteLine("Please input value for IO");
             string input = Console.ReadLine();
             return Convert.ToInt32(input);
-
         }
     }
 }

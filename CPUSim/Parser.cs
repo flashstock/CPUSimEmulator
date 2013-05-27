@@ -64,11 +64,21 @@ namespace CPUSim
 
         private void ReplaceAliasWithValue()
         {
-            for (int i = parsedprogram.Count - 1; i >= 0; i--)
+            for (int i = parsedprogram.Count - 1; i >= 0; i--) //holy shit
             {
-                if (parsedprogram[i].StartsWith("@"))
-                    parsedprogram.RemoveAt(i);
+                if (parsedprogram[i].Contains("$"))
+                {
+                    string[] temp = parsedprogram[i].Split(' ');
+                    for (int p = 0; p < temp.Length; p++)
+                    {
+                        if (temp[p].StartsWith("$"))
+                            temp[p] = aliases[temp[p]];
+                    }
+                    parsedprogram[i] = string.Join(" ", temp);
+                    
+                }
             }
+            
         }
 
         public List<string> GetParsedProgram()
@@ -76,8 +86,7 @@ namespace CPUSim
 
             foreach (string line in program)
                 ParseLine(line);
-            //foreach (string line in parsedprogram)
-            //    ParseAlias(line);
+            
             
             int i = 0;
             foreach (string line in parsedprogram)
@@ -91,7 +100,7 @@ namespace CPUSim
                     continue;
             }
             RemoveLabels();
-            
+            ReplaceAliasWithValue();
             return parsedprogram;
             
         }

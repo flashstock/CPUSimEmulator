@@ -24,11 +24,6 @@ namespace CPUSim
             this.aliases = aliases;
         }
 
-        private string ReplaceAliasWithValue(string alias) //dirty fix, should be in parser but I can't figure out how to implement
-        {
-            return aliases[alias];
-        }
-
         private string Fetch()
         {
             clockcount++;
@@ -47,18 +42,35 @@ namespace CPUSim
         {
             while (true)
             {
-                AddressOut(); //increments clockcount, does nothing
+                AddressOut(); //does nothing
                 string operation = Fetch();
                 if (operation != null)
                     Execute(Interpret(operation));
                 else
                     return; //END
-
             }
         }
-        private string[] Interpret(string operation) //purely for compatibility
+        private string[] Interpret(string operation) //purely for aesthetics
         {
             string[] splitoperation = operation.Split(' ');
+
+            for (int i = 0; i < splitoperation.Length; i++)
+            {
+                if (splitoperation[i] == "IO" && i > 1)
+                {
+                    switch (i)
+                    {
+                        case 2:
+                            memory.SetValue("IO1", input.GetInputToIO());
+                            splitoperation[i] = "IO1";
+                            break;
+                        case 3:
+                            memory.SetValue("IO2", input.GetInputToIO());
+                            splitoperation[i] = "IO2";
+                            break;
+                    }
+                }
+            }
             return splitoperation;
         }
 
@@ -67,14 +79,6 @@ namespace CPUSim
             memory.SetValue("PC", memory.GetValue("PC") + 1);
             clockcount++;
             int numberOfArguments = operation.Length - 1;
-
-            for (int i = 0; i < operation.Length; i++)
-            {
-                if (operation[i].StartsWith("$"))
-                {
-                    operation[i] = ReplaceAliasWithValue(operation[i]);
-                }
-            }
 
             switch (operation[0])
                     {
@@ -163,8 +167,9 @@ namespace CPUSim
                         case "NOP":
                             break;
                     }
+            memory.ResetTempIORegister();
         }
-        public void ExecuteLoadedProgram() //Retrieve - Interpret - Writeback
+       /* public void ExecuteLoadedProgram() //Retrieve - Interpret - Writeback
         {
         
             while (true)
@@ -310,6 +315,6 @@ namespace CPUSim
                     continue;
 
             }
-        }
+        }*/
     }
 }

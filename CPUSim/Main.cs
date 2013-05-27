@@ -50,7 +50,7 @@ namespace CPUSim
             memory.DumpRegisters();
             memory.DumpRAM();
 
-            Console.WriteLine("Press any key to continue . . .");
+            Console.WriteLine("\nPress any key to continue . . .");
             Console.ReadLine();
         }
 
@@ -60,19 +60,7 @@ namespace CPUSim
             {
                 if (line != "")
                     program.Add(line);
-                /*
-                if (line != "")
-                {
-                    int index = line.IndexOf("#");
-                    if (index > 0)
-                        instructions.Add(line.Substring(0, index));
-                    else
-                        instructions.Add(line);
-                }*/
             }
-
         }
-
-
     }
 }

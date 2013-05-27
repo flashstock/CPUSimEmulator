@@ -26,11 +26,11 @@ namespace CPUSim
             registers.Add("SP", 0);
             registers.Add("PC", 0);
             registers.Add("IR", 0);
-            //registers.Add("IO", 0);
+            registers.Add("IO", 0);
             registers.Add("RL", 0);
             registers.Add("TP", 0);
-            
-           
+            registers.Add("IO1", 0); //special magical registers, used as temp registers when using IO..
+            registers.Add("IO2", 0);
         }
 
         public int GetValue(string register)
@@ -58,17 +58,20 @@ namespace CPUSim
             {
                 if (register.Key == "IO1" || register.Key == "IO2")
                     continue;
-                Console.WriteLine("[{0}], [DEC:{1} HEX:{2} BIN:{3}]", register.Key, register.Value, register.Value.ToString("X"),
-                    Convert.ToString(register.Value, 2));
+                Console.WriteLine("[{0}], [DEC:{1} HEX:{2}]", register.Key, register.Value, register.Value.ToString("X"));
             }
         }
         public void DumpRAM()
         {
             foreach (var memory in ram)
             {
-                Console.WriteLine("[{0}], [DEC:{1} HEX:{2} BIN:{3}]", memory.Key, memory.Value, memory.Value.ToString("X"),
-                    Convert.ToString(memory.Value, 2));
+                Console.WriteLine("[{0}], [DEC:{1} HEX:{2}]", memory.Key, memory.Value, memory.Value.ToString("X"));
             }
+        }
+        public void ResetTempIORegister()
+        {
+            SetValue("IO1", 0); 
+            SetValue("IO2", 0); // We don't want to use these magical registers for storing
         }
 
         
