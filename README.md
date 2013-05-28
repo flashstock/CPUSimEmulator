@@ -54,6 +54,6 @@ R0 - R7 <br>
 SP - Stack top address <br>
 PC - Address to next instruction in program <br>
 IR - Contains the previously run command <br>
-IO - Will outpout to console window if it is a target, if IO is an operand, user will be asked to input a number <br>
+IO - If IO is an operand, user will be asked to input a number <br>
 RL - Unknown <br>
 TP - Unknown <br>
