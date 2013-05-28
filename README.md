@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Examples
 =============
-![ScreenShot](https://dl.dropboxusercontent.com/u/12347804/sharex/CWindowssystem32cmd.exe_2013-05-09_00-43-52.png)
+Soon
 
 Command List
 =============
