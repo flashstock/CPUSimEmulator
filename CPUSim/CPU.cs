@@ -38,7 +38,7 @@ namespace CPUSim
         {
             
         }
-        public void ExecuteLoadedProgramExperimental()
+        public void ExecuteLoadedProgram()
         {
             while (true)
             {
@@ -50,11 +50,11 @@ namespace CPUSim
                     return; //END
             }
         }
-        private string[] Interpret(string operation) //purely for aesthetics
+        private string[] Interpret(string operation)
         {
             string[] splitoperation = operation.Split(' ');
 
-            for (int i = 0; i < splitoperation.Length; i++)
+            for (int i = 0; i < splitoperation.Length; i++) //Used for detecting if IO is used as an operand
             {
                 if (splitoperation[i] == "IO" && i > 1)
                 {

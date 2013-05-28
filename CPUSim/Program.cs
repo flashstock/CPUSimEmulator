@@ -10,7 +10,7 @@ namespace CPUSim
     {
         static void Main(string[] args)
         {
-            new Main(args[0]).Run();
+            new Main(args).Run();
         }
     }
 }

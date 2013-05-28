@@ -45,9 +45,9 @@ namespace CPUSim
             else
             {
                 registers[register] = value;
-                if (register == "IO")
-                    Console.WriteLine("[IO event]:" + this.GetValue("IO"));
-                else if (register != "PC")
+                if (register == "IO1" || register == "IO2" || register == "PC")
+                    return;
+                else
                     Console.WriteLine("[{0} event]:{1}", register, this.GetValue(register));
             }
         }

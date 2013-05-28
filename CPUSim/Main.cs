@@ -18,9 +18,9 @@ namespace CPUSim
         private Dictionary<string, int> labels;
         private Dictionary<string, string> aliases;
         
-        public Main(string filename)
+        public Main(string[] args)
         {
-            this.filename = filename;
+            this.filename = args[0];
             memory = new Memory();
             input = new Input();
             parser = new Parser();
@@ -28,25 +28,25 @@ namespace CPUSim
 
         public void Run()
         {
-            Console.WriteLine("Reading program from {0}.", filename);
+            Console.WriteLine("Reading program from {0}.\n", filename);
             ReadFile(filename);
 
-            Console.WriteLine("Parsing program");
+            Console.WriteLine("Parsing program:\n");
             parser.SetProgram(program);
             parsedprogram = parser.GetParsedProgram();
             labels = parser.GetParsedLabels();
             aliases = parser.GetParsedAliases();
             foreach (string line in parsedprogram)
                 Console.WriteLine(line);
-            Console.WriteLine("Program parsed");
+            Console.WriteLine("\nProgram parsed\n");
 
             cpu = new CPU(parsedprogram, memory, input, labels, aliases);
-            Console.WriteLine("Executing program");
-            cpu.ExecuteLoadedProgramExperimental();
+            Console.WriteLine("Executing program\n");
+            cpu.ExecuteLoadedProgram();
             //cpu.ExecuteLoadedProgram();
-            Console.WriteLine("Program executed!");
+            Console.WriteLine("\nProgram executed!\n");
 
-            Console.WriteLine("\nDumping registers.\n");
+            Console.WriteLine("Dumping registers:\n");
             memory.DumpRegisters();
             memory.DumpRAM();
 
