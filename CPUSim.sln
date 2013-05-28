@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPUSim", "CPUSim\CPUSim.csproj", "{FFDBDDC1-0B61-414F-A3FB-ADD75E98E34C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayGround", "PlayGround\PlayGround.csproj", "{6BE04EFA-EC7F-4A63-919E-A04AF3449A8C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,10 +13,6 @@ Global
 		{FFDBDDC1-0B61-414F-A3FB-ADD75E98E34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFDBDDC1-0B61-414F-A3FB-ADD75E98E34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFDBDDC1-0B61-414F-A3FB-ADD75E98E34C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BE04EFA-EC7F-4A63-919E-A04AF3449A8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BE04EFA-EC7F-4A63-919E-A04AF3449A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BE04EFA-EC7F-4A63-919E-A04AF3449A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BE04EFA-EC7F-4A63-919E-A04AF3449A8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
